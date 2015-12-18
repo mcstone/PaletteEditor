@@ -1,0 +1,69 @@
+<!doctype html> <!-- @fileoverview about description for zoa -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no initial-scale=1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <title>zoa - about</title>
+
+  <link rel="apple-touch-icon" href="../src/client/assets/images/logo114.png"/>
+  <link rel="icon" sizes="16x16" href="../src/client/assets/images/logo16.png">
+  <link rel=stylesheet href="about.css"/>
+  <script src="about.js"></script>
+</head>
+<body>
+<div class=header>
+  <img class=titleImage src="../src/client/assets/images/logo32.png" />
+  <div class=titleText>zoa</div>
+</div>
+<h1>Description</h1>
+Zoa is a rapid prototyping environment for information visualization.
+
+<br><br><br>
+<hr>
+<h1>headless installation (zoa server runs in a command shell)</h1>
+<ul>
+  <li>install <a href="https://nodejs.org/en/download/">Node.js</a>
+  <li>unzip zoa.zip and place it in a directory of your choosing
+</ul>
+
+<h1>running the headless zoa server</h1>
+<ul>
+  <li>open a command shell/window
+  <li>cd zoa/src/serverHeadless
+  <li>type: node ./serverMain.js
+</ul>
+
+You should see a server start in the shell with an IP address like:<br>
+<pre>
+  7 Dec 2015 9:13:43pm zoa server (v1.1.0) (debug ON)
+  7 Dec 2015 9:13:43pm server started on: 192.168.1.7:43770
+  7 Dec 2015 9:13:43pm Press ^C^C to stop the server        
+</pre>
+
+Open a browser and direct it to 192.168.1.7:43770<br>
+(Note that the IP address is usually a local host, but not always.)
+<br>
+
+<br><br>
+<hr>
+<h1>full Installation (zoa server with a window)</h1>
+<ul>
+  <li>install <a href="https://nodejs.org/en/download/">Node.js</a>
+  <li>install <a href="http://nwjs.io/">node webkit (nw.js)</a>
+  <li>unzip zoa.zip and place it in a directory of your choosing
+</ul>
+
+<h1>running the zoa server with a window</h1>
+<ul>
+  <li>open a command shell/window
+  <li>cd zoa/src/server
+  <li>nw .
+</ul>
+
+</body>
+</html>
+

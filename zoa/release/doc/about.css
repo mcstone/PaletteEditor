@@ -1,0 +1,36 @@
+@import url(http://fonts.googleapis.com/css?family=Josefin+Sans:100,300,400);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:300,400);
+
+body {
+  background-color: rgb(255, 255, 255);
+  color: rgb(0, 0, 0);
+  font-family: open sans;
+  font-size: 0.9em;
+  font-weight: 400;
+  margin: 0;
+  padding: 10px;
+  width: 640px;
+}
+
+h1 {
+ font-size: 1.25em;
+ margin-bottom: 0;
+}
+
+ul {
+  margin-top: 0;
+}
+
+.header {
+}
+
+.titleImage {
+  display: inline-block;
+}
+
+.titleText {
+  display: inline-block;
+  font-family: josefin sans, open sans;
+  font-size: 3em;
+  margin-bottom: 10px;
+}

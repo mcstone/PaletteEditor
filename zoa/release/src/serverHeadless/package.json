@@ -1,0 +1,29 @@
+{
+  "debug": true,
+  "dependencies": {
+    "express": "^4.13.3",
+    "fast-csv": "^0.6.0"
+  },
+  "description": "zoa server",
+  "keywords": [
+    "zoa"
+  ],
+  "license": "ISC",
+  "main": "serverMain.html",
+  "name": "zoaServer",
+  "node-remote": "<local>",
+  "repository": {
+    "type": "git",
+    "url": "repositoryUrl"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "server": {
+    "logo": "assets/images/logo32.png",
+    "port": 43770,
+    "title": "zoa server",
+    "webRoot": "../client"
+  },
+  "version": "1.1.0"
+}

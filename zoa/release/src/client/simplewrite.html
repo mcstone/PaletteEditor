@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript" src="jquery-ui/external/jquery/jquery.js"></script>
+	<script type="text/javascript"  src="jquery-ui/jquery-ui.js"></script>
+</head>
+<body>
+<button type="button" id='write'>Write file</button>
+<button type = "button" id = 'read'>Read a file</button>
+<script id='myscript' type="text/javascript"></script>
+<script type="text/javascript">
+	
+var myString = 'imagine the csv'
+var myArray = [0,1,2,['a','b','c']]
+
+document.querySelector('#write').addEventListener('click', function(){
+	$.get('write',{file: "file.txt", data: myString},function(data){console.log(data)})
+})
+document.querySelector('#read').addEventListener('click', function(){
+	$.get('read',{fileName: 'hex.txt'},function(data){console.log(data)})  
+})
+</script>
+
+	</body>
+</html>
