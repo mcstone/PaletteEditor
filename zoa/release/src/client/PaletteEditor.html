@@ -59,14 +59,17 @@
 
 <script type="text/javascript" charset="utf-8">
 
-//This initializes the foreground colors
+//state keeps all the state for the client. It is initialized in the ready function.
+//there is a list of paletteItem, which contain list of colorItem (defined in colorEditorUtils.js)
+//the active palette is just a pointer into the palettes list, similarly the active colors
+//the $(document).ready() function does the initializations.
 
 state = {}
-state.colors = []
-state.pColor = chroma('#000000')	//actually set in the .ready function
-state.selectedPt = null
-
-state.hex = []	//set via initColors in colorEditorUtils
+state.pColor = chroma('#000000')	//the current patch color, init in ready function
+state.palettes = [] //list of palettes in this instance. Palette object defined in utils
+state.palette = {}	//the active palette. This could be just an index
+state.colors =[]	//the colors being edited. Pointer into the current palette
+state.selectedPt = null  //currently selected point
 
 
 formatTriple = function(t,p) {
@@ -78,9 +81,9 @@ formatTriple = function(t,p) {
 }
 changePalette = function() {
 	name = $("#select-palette").val() 
-	initColors(state,name)
-	state.selectedPt = null
-	displayColors()
+	clearSelection()
+	setPalette(state,name) 
+	updateDisplay()
 }
 initDisplay = function() { 
 	changePalette()
@@ -144,9 +147,8 @@ updateColorPatch = function(type) {
    $(".change-color").css("background-color", hex) //patch
    updateAllSliders()
  
-   if (state.selectedPt != null) {	//this is an svg object
-	 var cIndex = parseInt(state.selectedPt.attr('cIndex'))
-	 state.colors[cIndex].color = state.pColor
+   if (state.selectedPt!=null) {	//the selected color
+	 state.selectedPt.color = state.pColor 
 	 updateDisplay()  //does a full replot 
 	}
 
@@ -154,6 +156,8 @@ updateColorPatch = function(type) {
 
 $(document).ready(function() {
 	state.pColor = chroma.hsv(270,0.7,0.7)
+	initPalettes(state) //by default first palette is the active one
+	$('#file-text').val(state.palette.pName)
 	$("#hue").slider({
       orientation: "horizontal",
       range: "min",
@@ -216,6 +220,7 @@ $(document).ready(function() {
 		var paletteName = $('#file-text').val()
 		var xml = paletteToXML(state.colors, paletteName)
 		$.get('write',{file: paletteName+".xml", data: xml},function(data){console.log(data)})
+		
 		})
 	$('#read').click(function(){
 		var paletteName = $('#file-text').val()
@@ -301,8 +306,8 @@ displayColors = function() {
 //a,b points
 		var svgPt = svg_ab.append("circle")
 		.attr("r", pSize*scale)
-		.attr("cx", xOrg+Math.round((abSize/300)*lab[1]))
-		.attr("cy", yOrg-Math.round((abSize/300)*lab[2]))
+		.attr("cx", xOrg+Math.round((abSize/230)*lab[1]))
+		.attr("cy", yOrg-Math.round((abSize/230)*lab[2]))
 		.attr("fill",hex)
 		.attr("tip",tip)
 		.attr('cIndex',i)
@@ -314,7 +319,7 @@ displayColors = function() {
 		.attr("width",lW*scale)
 		.attr("height", pH)
 		.attr("x", (lWidth-lW*scale)/2)
-		.attr("y", abSize-Math.round((abSize/100)*lab[0]))
+		.attr("y", abSize-5-Math.round((abSize/105)*lab[0]))
 		.attr("fill",hex)
 		.attr("tip",tip)
 		.attr('cIndex',i)
@@ -367,25 +372,26 @@ findColorItem = function(svgPt) {
 	var cIndex = parseInt(svgPt.attr('cIndex'))
 	return state.colors[cIndex]
 }
-
+clearSelection = function() {
+	if (state.selectedPt != null) {
+	state.selectedPt.selected = false
+	state.selectedPt = null
+	}
+}
+//state.selected is a pointer to a colorItem
 myOnClick = function(svgPt) {
 	var c = findColorItem(svgPt)
-		if (c.selected==true) {
-			c.selected=false
-			state.selectedPt = null
-		}
-		else {	
-			state.pColor = chroma(svgPt.attr("fill"))
-			if (state.selectedPt != null) {
-				c = findColorItem(state.selectedPt)
-				c.selected = false
-			}
-			state.selectedPt = svgPt
-			c = findColorItem(svgPt)
-			c.selected = true
-			updateColorPatch("point")
-		}
-	updateDisplay()  //does a full replot
+	if (c == state.selectedPt) { //just deselect the point
+		clearSelection()
+		displayColors()
+	} else { 
+		state.selectedPt = c;	//select a new one
+		state.selectedPt.selected = true;
+		state.pColor = state.selectedPt.color;
+		updateColorPatch("point") 	//will also redisplay the colors
+	}
+	console.log("what?")
+	
 }
 
 addActions = function(svgPt) {
