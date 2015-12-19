@@ -82,7 +82,8 @@ formatTriple = function(t,p) {
 changePalette = function() {
 	name = $("#select-palette").val() 
 	clearSelection()
-	setPalette(state,name) 
+	setPalette(state,name)
+	$("#file-text").val(name)
 	updateDisplay()
 }
 initDisplay = function() { 
@@ -228,6 +229,18 @@ $(document).ready(function() {
 		$.get('read',{fileName:paletteName+".txt"},function(data){newHex = data})
 		addPalettes(newHex)
 	})
+	$('#addColor').click(function(){
+		clearSelection()
+		addToPalette(state.palette, state.pColor.hex(), false)
+		displayColors()
+		//state.SelectedPt = addToPalette(state.palette, state.pColor.hex(), true)
+		//updateColorPatch("point")
+	})
+	$('#deleteColor').click(function(){
+		state.selectedPt.deleted = true
+		clearSelection()
+		displayColors()
+	})
 	initDisplay()
   });
 	
@@ -298,6 +311,7 @@ displayColors = function() {
 //loop over the colors
 	for (i = 0; i<state.colors.length; i++) {
 		var d = state.colors[i]
+		if (d.deleted == true) {continue}
 		var lab = d.color.lab()
 		var hex = d.color.hex()
 		var tip = hex2tip(hex)
@@ -355,8 +369,11 @@ drawArray = function(svg, pSize, gap) {
 	var rowLen = Math.floor(svg.attr("width")/step)
 	for (i = 0; i<state.colors.length; i++) {
 		var d = state.colors[i]
+		if (d.deleted == true) {continue}
 		var lab = d.color.lab()
 		var hex = d.color.hex()
+		var bColor = hex
+		if (d.selected==true) {bColor = "#000000"}
 		var x = step*(i%rowLen)
 		var y = step*Math.floor(i/rowLen)
 		svgPt = svg.append("rect")
@@ -365,6 +382,9 @@ drawArray = function(svg, pSize, gap) {
 		.attr("x", x)
 		.attr("y", y)
 		.attr("fill",hex)
+		.style("stroke",bColor)
+		.attr('cIndex',i)
+		addActions(svgPt)
 	}
 }
 
@@ -385,6 +405,7 @@ myOnClick = function(svgPt) {
 		clearSelection()
 		displayColors()
 	} else { 
+		clearSelection()
 		state.selectedPt = c;	//select a new one
 		state.selectedPt.selected = true;
 		state.pColor = state.selectedPt.color;
@@ -414,20 +435,21 @@ addActions = function(svgPt) {
 
 <div id ="palettes" >
 	<select id="select-palette" style = "width: 200px;">
-		<option>Clear palette</option>
+		<option>New Palette</option>
 		<option selected="selected"> Tableau 10</option>
 		<option >Tableau 20</option>
 		<option>Tableau Light</option>
-		<option>Colorblind</option>
-		<option>Gray 5</option>
-		<option>Affect All</option>
 		<option>Cristy All</option>
 	</select>
 	<div class = "control-group" style = "margin-left: 5px;">
 		<div style="width: 100px;">Palette Name: </div>
 		<input type="text" class = "smallText" id="file-text" name="hex-text" style = "width: 100px; border: 1px solid #aaaaaa;"/>
-	<button type="button" id='write'>Write XML</button>
-	<button type="button" id='read'>Read Hex</button>
+		<button type="button" id='write'>Write XML</button>
+		<button type="button" id='read'>Read Hex</button>
+		<div style = "margin-left: 10px;">
+			<button type="button" id='addColor'>Add Color</button>
+			<button type="button" id='deleteColor'>Delete Color</button>
+		</div>
 	</div>
 </div>
 <div class='hContainer' id='controls'>

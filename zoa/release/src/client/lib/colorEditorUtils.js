@@ -21,6 +21,7 @@ function colorItem(color, selected, palette, name, notes) {
 		this.name = name
 		this.palette = palette
 		this.notes = notes
+		this.deleted = false
  }
 function paletteItem(pName,original, edited) {
 	this.pName = pName
@@ -38,9 +39,15 @@ function colorsFromName(name) {
 		case "Gray 5": hex=gray5; break;
 		case "Affect All": hex=affect; break;
 		case "Cristy All": hex=cristy_all; break;
+		case "New Palette": hex = []; break;
 		default: hex = [];
 	}
 	return hex
+}
+function addToPalette(palette, hex, selected) {
+	var index = palette.eColors.length
+	palette.eColors[index] = new colorItem(chroma(hex),selected,palette.pName)
+	return palette.eColors[index]
 }
 function setPalette(state,pName) {
 	state.palette = state.palettes[findPalette(state.palettes, pName)]
@@ -56,7 +63,7 @@ function initPalette(pName) {
 	var hex = colorsFromName(pName)
 	var colors = []
 	for (var i=0; i< hex.length; i++) {
-		colors[i] = new colorItem(chroma(hex[i]),false)
+		colors[i] = new colorItem(chroma(hex[i]),false,pName)
 	}
 	var p =  new paletteItem(pName, colors, colors.slice())
 	return p
@@ -72,7 +79,7 @@ function paletteToXML(colors, pName) {
 }
 		
 function initPalettes(state) {
-	var pNames = ["Tableau 10","Tableau 20","Tableau Light","Cristy All"]
+	var pNames = ["Tableau 10","Tableau 20","Tableau Light","Cristy All","New Palette"]
 	state.palettes = []
 	for (var i=0;i<pNames.length;i++) {
 		state.palettes[i] = initPalette(pNames[i])
