@@ -21,7 +21,6 @@ function colorItem(color, selected, palette, name, notes) {
 		this.name = name
 		this.palette = palette
 		this.notes = notes
-		this.deleted = false
  }
 function paletteItem(pName,original, edited) {
 	this.pName = pName
@@ -49,6 +48,16 @@ function addToPalette(palette, hex, selected) {
 	palette.eColors[index] = new colorItem(chroma(hex),selected,palette.pName)
 	return palette.eColors[index]
 }
+function deleteFromPalette(palette,point) {
+	if (point !=null) {
+		for (var index=0; index<palette.length; index ++) {
+			if (palette[index] == point) {
+				palette.splice(index,1)
+			}
+		}
+	}
+}
+
 function setPalette(state,pName) {
 	state.palette = state.palettes[findPalette(state.palettes, pName)]
 	state.colors = state.palette.eColors
@@ -70,9 +79,9 @@ function initPalette(pName) {
 }
 
 function paletteToXML(colors, pName) {
-	var xml = '<color-palette name='+pName+' type = \"regular\">\n'
+	var xml = '<color-palette name='+'\"'+pName+'\"'+' type = \"regular\">\n'
 	for (var i=0;i<colors.length;i++) {
-		xml = xml+'<color>'+colors[i].color.hex()+'</color>\n'
+		xml = xml+'<color>'+'\"'+colors[i].color.hex()+'\"'+'</color>\n'
 	}
 	xml = xml+'</color-palette>'
 	return xml

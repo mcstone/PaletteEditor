@@ -237,7 +237,7 @@ $(document).ready(function() {
 		//updateColorPatch("point")
 	})
 	$('#deleteColor').click(function(){
-		state.selectedPt.deleted = true
+		deleteFromPalette(state.colors,state.selectedPt)	//done in place with pointers
 		clearSelection()
 		displayColors()
 	})
@@ -311,7 +311,6 @@ displayColors = function() {
 //loop over the colors
 	for (i = 0; i<state.colors.length; i++) {
 		var d = state.colors[i]
-		if (d.deleted == true) {continue}
 		var lab = d.color.lab()
 		var hex = d.color.hex()
 		var tip = hex2tip(hex)
@@ -369,7 +368,6 @@ drawArray = function(svg, pSize, gap) {
 	var rowLen = Math.floor(svg.attr("width")/step)
 	for (i = 0; i<state.colors.length; i++) {
 		var d = state.colors[i]
-		if (d.deleted == true) {continue}
 		var lab = d.color.lab()
 		var hex = d.color.hex()
 		var bColor = hex
@@ -446,10 +444,6 @@ addActions = function(svgPt) {
 		<input type="text" class = "smallText" id="file-text" name="hex-text" style = "width: 100px; border: 1px solid #aaaaaa;"/>
 		<button type="button" id='write'>Write XML</button>
 		<button type="button" id='read'>Read Hex</button>
-		<div style = "margin-left: 10px;">
-			<button type="button" id='addColor'>Add Color</button>
-			<button type="button" id='deleteColor'>Delete Color</button>
-		</div>
 	</div>
 </div>
 <div class='hContainer' id='controls'>
@@ -488,6 +482,10 @@ addActions = function(svgPt) {
 	</div>
 
 
+	<div class = "vContainer">
+		<button type="button" id='addColor'  style = "margin: 10px;">Add Patch Color</button>
+		<button type="button" id='deleteColor' style = "margin: 10px;">Delete Selected Color</button>
+	</div>
 	<div class = "vContainer" >
 	<div class = "control-group">
 		<div style="width: 40px;">Hex: </div>

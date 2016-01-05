@@ -621,8 +621,8 @@ button.ui-button::-moz-focus-inner {
 }
 .ui-selectmenu-menu .ui-menu .ui-selectmenu-optgroup {
 	font-size: 1em;
-	font-weight: bold;
-	line-height: 1.5;
+	/*font-weight: bold;
+	line-height: 1.5; */
 	padding: 2px 0.4em;
 	margin: 0.5em 0 0 0;
 	height: auto;
@@ -647,9 +647,9 @@ button.ui-button::-moz-focus-inner {
 }
 .ui-selectmenu-button span.ui-selectmenu-text {
 	text-align: left;
-	padding: 0.4em 2.1em 0.4em 1em;
+	/*padding: 0.4em 1em 0.4em 1em;
+	line-height: 1.4; */
 	display: block;
-	line-height: 1.4;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -830,7 +830,6 @@ body .ui-tooltip {
 /* Component containers
 ----------------------------------*/
 .ui-widget {
-	font-family: Verdana,Arial,sans-serif;
 	font-size: 1.1em;
 }
 .ui-widget .ui-widget {
@@ -840,7 +839,6 @@ body .ui-tooltip {
 .ui-widget select,
 .ui-widget textarea,
 .ui-widget button {
-	font-family: Verdana,Arial,sans-serif;
 	font-size: 1em;
 }
 .ui-widget-content {
