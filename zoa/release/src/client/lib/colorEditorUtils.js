@@ -18,8 +18,8 @@ var affect =  ['#1C642B','#3E6385','#6B6F5D','#8BA552','#61A7A5','#66BEC6','#87A
 function colorItem(color, selected, palette, name, notes) {
 		this.color = color
 		this.selected = selected
-		this.name = name
 		this.palette = palette
+		this.name = name
 		this.notes = notes
  }
 function paletteItem(pName,original, edited) {
@@ -74,10 +74,24 @@ function initPalette(pName) {
 	for (var i=0; i< hex.length; i++) {
 		colors[i] = new colorItem(chroma(hex[i]),false,pName)
 	}
-	var p =  new paletteItem(pName, colors, colors.slice())
+	var p =  new paletteItem(pName, colors, copyColors(colors,pName))
 	return p
 }
+function copyColors(cArray, pName) { //deep copy of an array of color items
+	var colors = []
+	for (var i=0; i<cArray.length; i++) {
+		colors[i] = new colorItem(chroma(cArray[i].color.hex()), false, pName)
+	}
+	return colors
+}
 
+function copyPalette(palette,newName) {
+	//we need to create new color elements for the new palette
+	if (palette.pName == newName) {newName = newName+"(copy)"}
+	var colors = copyColors(palette.eColors,newName)
+	var p =  new paletteItem(newName, colors, copyColors(colors,newName))
+	return p
+}
 function paletteToXML(colors, pName) {
 	var xml = '<color-palette name='+'\"'+pName+'\"'+' type = \"regular\">\n'
 	for (var i=0;i<colors.length;i++) {

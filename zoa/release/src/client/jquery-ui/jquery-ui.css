@@ -606,6 +606,8 @@ button.ui-button::-moz-focus-inner {
 	background-image: none;
 }
 .ui-selectmenu-menu {
+	font-family: sans-serif;
+	font-size: 0.8em;
 	padding: 0;
 	margin: 0;
 	position: absolute;
@@ -620,11 +622,10 @@ button.ui-button::-moz-focus-inner {
 	padding-bottom: 1px;
 }
 .ui-selectmenu-menu .ui-menu .ui-selectmenu-optgroup {
-	font-size: 1em;
-	/*font-weight: bold;
-	line-height: 1.5; */
-	padding: 2px 0.4em;
-	margin: 0.5em 0 0 0;
+	font-weight: bold;
+	/*line-height: 1.5; */
+	padding: 2px 0.2em;
+	margin: 0.2em 0 0 0;
 	height: auto;
 	border: 0;
 }
@@ -632,6 +633,8 @@ button.ui-button::-moz-focus-inner {
 	display: block;
 }
 .ui-selectmenu-button {
+	font-size: 0.8em;
+	font-family: sans-serif;
 	display: inline-block;
 	overflow: hidden;
 	position: relative;
@@ -639,15 +642,17 @@ button.ui-button::-moz-focus-inner {
 	cursor: pointer;
 }
 .ui-selectmenu-button span.ui-icon {
-	right: 0.5em;
+	font-size: 0.8em;
+	right: 0.2em;
 	left: auto;
 	margin-top: -8px;
 	position: absolute;
 	top: 50%;
 }
 .ui-selectmenu-button span.ui-selectmenu-text {
+	font-size: 0.8em;
 	text-align: left;
-	/*padding: 0.4em 1em 0.4em 1em;
+	padding: 0.1em 0.2em 0.1em 0.4em;
 	line-height: 1.4; */
 	display: block;
 	overflow: hidden;

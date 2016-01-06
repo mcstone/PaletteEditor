@@ -19,7 +19,7 @@
 		margin-bottom: 5px;
 	}
 	.vContainer {
-		margin-left: 20px;
+		margin-left: 10px;
 	}
 	
 	.sliderLabel {
@@ -49,10 +49,6 @@
 	#cieC .ui-slider-range { background: #b7b7b7; }
 	#cieH .ui-slider-range { background: #b7b7b7; }
 	#spinner .ui-spinner-input {width: 10px;}
-	#palette-selector ui-selector-menu {
-		width: 200px; padding: 0px;
-
-	}
 
 
 	</style>  	
@@ -70,6 +66,7 @@ state.palettes = [] //list of palettes in this instance. Palette object defined 
 state.palette = {}	//the active palette. This could be just an index
 state.colors =[]	//the colors being edited. Pointer into the current palette
 state.selectedPt = null  //currently selected point
+state.path = "../../data/stone/"
 
 
 formatTriple = function(t,p) {
@@ -83,7 +80,7 @@ changePalette = function() {
 	name = $("#select-palette").val() 
 	clearSelection()
 	setPalette(state,name)
-	$("#file-text").val(name)
+	$("#pname-text").val(name)
 	updateDisplay()
 }
 initDisplay = function() { 
@@ -158,7 +155,8 @@ updateColorPatch = function(type) {
 $(document).ready(function() {
 	state.pColor = chroma.hsv(270,0.7,0.7)
 	initPalettes(state) //by default first palette is the active one
-	$('#file-text').val(state.palette.pName)
+	$('#pname-text').val(state.palette.pName)
+	$('#path-text').val(state.path)
 	$("#hue").slider({
       orientation: "horizontal",
       range: "min",
@@ -217,14 +215,28 @@ $(document).ready(function() {
 			changePalette()
 		}
 	});
-	$('#write').click(function(){
-		var paletteName = $('#file-text').val()
+	$('#xml').click(function(){
+		var paletteName = $('#pname-text').val()
 		var xml = paletteToXML(state.colors, paletteName)
-		$.get('write',{file: paletteName+".xml", data: xml},function(data){console.log(data)})
+		$.get('write',{file: state.path+paletteName+".xml", data: xml},function(data){console.log(data)})
 		
 		})
+	$('#copy').click(function(){
+		clearSelection()
+		var newName = $('#pname-text').val()
+		var newPalette = copyPalette(state.palette, newName)
+		newName = newPalette.pName	//might have an added "(copy") now
+		state.palettes[state.palettes.length] = newPalette //add to the palettes array
+		//now we need to update the selectmenu list
+		$("#select-palette option").removeAttr('selected') //remove the old selection
+		var qName = '"'+newName+'"'
+		$('#select-palette').append('<option value=' +qName+ 'selected="selected">'+newName+'</option>');
+		$('#select-palette').val(newName)
+		changePalette()
+		})
+	
 	$('#read').click(function(){
-		var paletteName = $('#file-text').val()
+		var paletteName = $('#pname-text').val()
 		var newHex =''
 		$.get('read',{fileName:paletteName+".txt"},function(data){newHex = data})
 		addPalettes(newHex)
@@ -233,8 +245,6 @@ $(document).ready(function() {
 		clearSelection()
 		addToPalette(state.palette, state.pColor.hex(), false)
 		displayColors()
-		//state.SelectedPt = addToPalette(state.palette, state.pColor.hex(), true)
-		//updateColorPatch("point")
 	})
 	$('#deleteColor').click(function(){
 		deleteFromPalette(state.colors,state.selectedPt)	//done in place with pointers
@@ -431,22 +441,32 @@ addActions = function(svgPt) {
 <body>
 <div style = "margin: 15px">
 
-<div id ="palettes" >
-	<select id="select-palette" style = "width: 200px;">
-		<option>New Palette</option>
-		<option selected="selected"> Tableau 10</option>
-		<option >Tableau 20</option>
-		<option>Tableau Light</option>
-		<option>Cristy All</option>
+<div id ="global-controls" class="control-group" style="margin:10px 0px 20px 3px;">
+	<button type="button" id='read'>Read All</button>
+	<button type="button" id='save'>Save All</button>
+	<button type="button" id='workspace'>Workspace</button>
+	<input type="text" class = "smallText" name="path-text" id="path-text" style = "width: 200px; border: 1px solid #cccccc;">
+	
+</div>
+<div id ="palette-controls" >
+	<div class = "control-group" >
+		 <div style = "font-family: sans-serif; margin-left: 0.1em; margin-right: 0.2em; padding-top: 2px;"> Current Palette: </div>
+	<select id="select-palette" style = "width: 120px;">
+		<option value= 'New Palette'>New Palette</option>
+		<option value ='Tableau 10' selected="selected"> Tableau 10</option>
+		<option value ='Tableau 20'>Tableau 20</option>
+		<option value ='Tableau Light'>Tableau Light</option>
+		<option value ='Cristy All'>Cristy All</option>
 	</select>
+	</div>
 	<div class = "control-group" style = "margin-left: 5px;">
-		<div style="width: 100px;">Palette Name: </div>
-		<input type="text" class = "smallText" id="file-text" name="hex-text" style = "width: 100px; border: 1px solid #aaaaaa;"/>
-		<button type="button" id='write'>Write XML</button>
-		<button type="button" id='read'>Read Hex</button>
+		<button type="button" id='copy'>Copy</button>
+		<button type="button" id='rename'>Rename</button>
+		<button type="button" id='xml'>Write XML</button>
+		<input type="text" class = "smallText" name="pname-text" id="pname-text" style = "width: 200px; border: 1px solid #cccccc;">
 	</div>
 </div>
-<div class='hContainer' id='controls'>
+<div class='hContainer' id='color-controls'>
 <!-- HSV sliders -->
 
 	<div class = "vContainer">
@@ -466,7 +486,7 @@ addActions = function(svgPt) {
 	
 	<div id="swatch" class="change-color"></div>
 <!-- LCh sliders -->
-	<div class = "vContainer">
+	<div class = "vContainer" style = "margin-left: 20px;">
 		<div class = 'hContainer'>
 			<div class='sliderLabel'>L: </div> 
 			<div id="cieL"></div>
@@ -504,7 +524,7 @@ addActions = function(svgPt) {
 </div>
 </div>
 <div class="hContainer" id = 'plots'>
-	<div id = "abPlot" style="margin: 5px"></div>
+	<div id = "abPlot" style="margin: 5px 5px 5px 0px;"></div>
 	<div id = "LPlot" style="margin: 5px"></div>
 	<div id = "pExamples" style="margin: 5px"></div>
 </div>
