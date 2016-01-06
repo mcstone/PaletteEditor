@@ -230,8 +230,9 @@ $(document).ready(function() {
 		//now we need to update the selectmenu list
 		$("#select-palette option").removeAttr('selected') //remove the old selection
 		var qName = '"'+newName+'"'
-		$('#select-palette').append('<option value=' +qName+ 'selected="selected">'+newName+'</option>');
+		$('#select-palette').append('<option value=' +qName+ 'selected="selected">'+newName+'</option>')
 		$('#select-palette').val(newName)
+		$( "#select-palette" ).selectmenu( "refresh" )
 		changePalette()
 		})
 	
@@ -451,7 +452,7 @@ addActions = function(svgPt) {
 <div id ="palette-controls" >
 	<div class = "control-group" >
 		 <div style = "font-family: sans-serif; margin-left: 0.1em; margin-right: 0.2em; padding-top: 2px;"> Current Palette: </div>
-	<select id="select-palette" style = "width: 120px;">
+	<select id="select-palette" style = "width: 160px;">
 		<option value= 'New Palette'>New Palette</option>
 		<option value ='Tableau 10' selected="selected"> Tableau 10</option>
 		<option value ='Tableau 20'>Tableau 20</option>
