@@ -28,7 +28,7 @@ function paletteItem(pName,original, edited) {
 	this.eColors = edited
 	this.version = 0
 }
-function colorsFromName(name) {
+function hexFromName(name) {
 	var hex
 	switch(name) {
 		case "Tableau 10": hex=tableau10; break;
@@ -62,14 +62,31 @@ function setPalette(state,pName) {
 	state.palette = state.palettes[findPalette(state.palettes, pName)]
 	state.colors = state.palette.eColors
 }
+
+
 function findPalette(palettes,pName) {
 	for(var i=0;i<palettes.length;i++) {
 		if (palettes[i].pName == pName) {return i}  //we're going to use pointers
 	}
 }
+function parseHexList(hString) {
+	var hexValues = hString.split(",")
+	for (var i = 0; i<hexValues.length; i++) {
+		hexValues[i] = hexValues[i].trim()
+	}
+	//could do more validity checking here
+	return hexValues
+}
+function createHexString(colors) {
+	if (colors.length==0){return ""}
+	var hexString = colors[0].color.hex()
+	for (var i = 1; i<colors.length; i++) {
+		hexString = hexString+', '+colors[i].color.hex()
+	}
+	return hexString
+}
 
-function initPalette(pName) {
-	var hex = colorsFromName(pName)
+function createPalette(hex,pName) {
 	var colors = []
 	for (var i=0; i< hex.length; i++) {
 		colors[i] = new colorItem(chroma(hex[i]),false,pName)
@@ -87,7 +104,6 @@ function copyColors(cArray, pName) { //deep copy of an array of color items
 
 function copyPalette(palette,newName) {
 	//we need to create new color elements for the new palette
-	if (palette.pName == newName) {newName = newName+"(copy)"}
 	var colors = copyColors(palette.eColors,newName)
 	var p =  new paletteItem(newName, colors, copyColors(colors,newName))
 	return p
@@ -95,7 +111,7 @@ function copyPalette(palette,newName) {
 function paletteToXML(colors, pName) {
 	var xml = '<color-palette name='+'\"'+pName+'\"'+' type = \"regular\">\n'
 	for (var i=0;i<colors.length;i++) {
-		xml = xml+'<color>'+'\"'+colors[i].color.hex()+'\"'+'</color>\n'
+		xml = xml+'<color>'+colors[i].color.hex()+'</color>\n'
 	}
 	xml = xml+'</color-palette>'
 	return xml
@@ -105,7 +121,8 @@ function initPalettes(state) {
 	var pNames = ["Tableau 10","Tableau 20","Tableau Light","Cristy All","New Palette"]
 	state.palettes = []
 	for (var i=0;i<pNames.length;i++) {
-		state.palettes[i] = initPalette(pNames[i])
+		var hex = hexFromName(pNames[i])
+		state.palettes[i] = createPalette(hex, pNames[i])
 	}
 	
 	setPalette(state,pNames[0])	 

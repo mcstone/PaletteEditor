@@ -221,26 +221,48 @@ $(document).ready(function() {
 		$.get('write',{file: state.path+paletteName+".xml", data: xml},function(data){console.log(data)})
 		
 		})
+	$('#reset').click(function(){
+		clearSelection()
+		state.palette.eColors = copyColors(state.palette.oColors,state.palette.pName)
+		})
 	$('#copy').click(function(){
 		clearSelection()
-		var newName = $('#pname-text').val()
+		var newName = makeUnique($('#pname-text').val())
 		var newPalette = copyPalette(state.palette, newName)
-		newName = newPalette.pName	//might have an added "(copy") now
-		state.palettes[state.palettes.length] = newPalette //add to the palettes array
-		//now we need to update the selectmenu list
-		$("#select-palette option").removeAttr('selected') //remove the old selection
-		var qName = '"'+newName+'"'
-		$('#select-palette').append('<option value=' +qName+ 'selected="selected">'+newName+'</option>')
-		$('#select-palette').val(newName)
-		$( "#select-palette" ).selectmenu( "refresh" )
-		changePalette()
+		addPalette(newPalette)
+		addToMenu(newName) 	//also changes to new palette
+		})
+	$('#rename').click(function(){
+		clearSelection()
+		var oldName = $("#select-palette").val()
+		var newName = makeUnique($('#pname-text').val())
+		var palette = state.palettes[findPalette(state.palettes,oldName)]
+		if (palette == null) {console.log(oldName+" not found")}
+		else {
+			palette.pName = newName
+			var options = $("#select-palette option")
+			for (var i=0; i<options.length; i++) {
+				if (options[i].text == oldName) {
+					options[i].text = newName
+					options[i].value =newName
+					break
+				}
+			}
+			$( "#select-palette" ).selectmenu( "refresh" )
+		}
 		})
 	
-	$('#read').click(function(){
-		var paletteName = $('#pname-text').val()
-		var newHex =''
-		$.get('read',{fileName:paletteName+".txt"},function(data){newHex = data})
-		addPalettes(newHex)
+	$('#readHex').click(function(){
+		var hexString = $('#hexList-text').val()
+		var hexVals = parseHexList(hexString)
+		var pName = makeUnique($('#pname-text').val())
+		var newPalette = createPalette(hexVals, pName)
+		addPalette(newPalette)
+		addToMenu(pName)
+	})
+	$('#writeHex').click(function(){
+		var hexString = createHexString(state.colors)
+		$('#hexList-text').val(hexString)
 	})
 	$('#addColor').click(function(){
 		clearSelection()
@@ -255,12 +277,31 @@ $(document).ready(function() {
 	initDisplay()
   });
 	
-addPalette = function(hex) {
-	console.log(hex)
+function addToMenu(newName) {
+	$("#select-palette option").removeAttr('selected') //remove the old selection
+	var qName = '"'+newName+'"'
+	$('#select-palette').append('<option value=' +qName+ 'selected="selected">' +newName+ '</option>')
+	$('#select-palette').val(newName)
+	$( "#select-palette" ).selectmenu( "refresh" )
+	changePalette()
+}
+function addPalette(newPalette) {
+	state.palettes[state.palettes.length] = newPalette //add to the palettes array
+}
+function makeUnique(newName){
+	var i = 0;
+	while (i<state.palettes.length) {
+		if (newName == state.palettes[i].pName) {
+			newName = newName+'(cp)'
+			i = 0
+		}
+		else {i++}
+	}
+		
+	return newName
 }
 
-
-displayColors = function() {
+function displayColors() {
 	
 	d3.select('#plots').selectAll("svg").remove();
 	//create the tooltip
@@ -420,8 +461,6 @@ myOnClick = function(svgPt) {
 		state.pColor = state.selectedPt.color;
 		updateColorPatch("point") 	//will also redisplay the colors
 	}
-	console.log("what?")
-	
 }
 
 addActions = function(svgPt) {
@@ -461,10 +500,16 @@ addActions = function(svgPt) {
 	</select>
 	</div>
 	<div class = "control-group" style = "margin-left: 5px;">
+		<button type="button" id='reset'>Reset</button>
 		<button type="button" id='copy'>Copy</button>
 		<button type="button" id='rename'>Rename</button>
 		<button type="button" id='xml'>Write XML</button>
-		<input type="text" class = "smallText" name="pname-text" id="pname-text" style = "width: 200px; border: 1px solid #cccccc;">
+		<input type="text" class = "smallText" name="pname-text" id="pname-text" style = "width: 150px; border: 1px solid #cccccc;">
+	</div>
+	<div class = "control-group" style = "margin-left: 5px;">
+		<button type="button" id='readHex'>Read Hex</button>
+		<button type="button" id='writeHex'>Write Hex</button>
+		<input type="text" class = "smallText" name="hexList-text" id="hexList-text" style = "width: 300px; border: 1px solid #cccccc;">
 	</div>
 </div>
 <div class='hContainer' id='color-controls'>
