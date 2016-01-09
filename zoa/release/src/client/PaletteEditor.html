@@ -202,7 +202,7 @@ $(document).ready(function() {
 		stop: slideLCHSliders,
       change: changeLCHSliders
     });
-		$("#hex-text").keypress(function(event) {
+	$("#hex-text").keypress(function(event) {
 		if (event.keyCode == 13) {
             var v= $("#hex-text").val()
 			state.pColor = chroma(v)
@@ -224,6 +224,8 @@ $(document).ready(function() {
 	$('#reset').click(function(){
 		clearSelection()
 		state.palette.eColors = copyColors(state.palette.oColors,state.palette.pName)
+		state.colors = state.palette.eColors
+		updateDisplay() 
 		})
 	$('#copy').click(function(){
 		clearSelection()
@@ -266,7 +268,7 @@ $(document).ready(function() {
 	})
 	$('#addColor').click(function(){
 		clearSelection()
-		addToPalette(state.palette, state.pColor.hex(), false)
+		state.selectedPt = addToPalette(state.palette, state.pColor.hex(), true)
 		displayColors()
 	})
 	$('#deleteColor').click(function(){
@@ -448,6 +450,8 @@ clearSelection = function() {
 	state.selectedPt = null
 	}
 }
+
+	
 //state.selected is a pointer to a colorItem
 myOnClick = function(svgPt) {
 	var c = findColorItem(svgPt)
